@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,22 +31,30 @@ class Controller {
     @GetMapping(value = "/{id}")
     public String findById(@PathVariable("id") Long id) {
     	TweetEntity entity = new TweetEntity();
+    	List<String> list = new ArrayList<String>();
     	try {
-			searchtweets();
+    		list = searchtweets();
 		} catch (TwitterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	entity.setId(id);
-    	entity.setTweet("tomaya");
-    	repository.save(entity);
-        return "hola :"+id;
+    	
+    	if(!list.isEmpty()) {
+    		entity.setId(id);
+    		entity.setTweet(list.get(0));
+    		repository.save(entity);
+    		return "TweetEntity guardado con id: "+id +"tweet : "+entity.getTweet();
+    	}else {
+    		return "TweetEntity no guardado";
+    		
+    	}
+    	
     }
     
     public static List<String> searchtweets() throws TwitterException {
     	 
         Twitter twitter = TwitterFactory.getSingleton();
-        Query query = new Query("source:twitter4j baeldung");
+        Query query = new Query("escalada");
         QueryResult result = twitter.search(query);
         
         return result.getTweets().stream()
